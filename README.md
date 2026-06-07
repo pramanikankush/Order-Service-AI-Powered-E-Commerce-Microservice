@@ -1,4 +1,4 @@
-# Order Service — AI-Powered E-Commerce Microservice
+﻿# Order Service â€” AI-Powered E-Commerce Microservice
 
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://adoptium.net)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen)](https://spring.io/projects/spring-boot)
@@ -8,7 +8,7 @@
 [![Vite](https://img.shields.io/badge/Vite-7.3-646CFF)](https://vitejs.dev)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A production-grade full-stack microservice that implements a real-world e-commerce order system with **AI-powered semantic product recommendations**, **transactional outbox pattern**, **pessimistic inventory locking**, and a **React + Tailwind** frontend. Runs entirely on local infrastructure — no cloud dependencies.
+A production-grade full-stack microservice that implements a real-world e-commerce order system with **AI-powered semantic product recommendations**, **transactional outbox pattern**, **pessimistic inventory locking**, and a **React + Tailwind** frontend. Runs entirely on local infrastructure â€” no cloud dependencies.
 
 ---
 
@@ -16,27 +16,27 @@ A production-grade full-stack microservice that implements a real-world e-commer
 
 ```
 Client (React + Vite + Tailwind)
-   │  X-Owner-Key header (identity)
-   ▼
+   â”‚  X-Owner-Key header (identity)
+   â–¼
 Spring Boot REST (Controllers + MapStruct DTOs)
-   │
-   ├── OrderService ─── @Transactional + PESSIMISTIC_WRITE on inventory
-   │                        ↓ atomic outbox event
-   ├── CartService
-   ├── ProductService ──── EmbeddingService ── Resilience4j (CB + retry)
-   │                                            └── Ollama (local, nomic-embed-text)
-   │
-   ├── PostgreSQL 16 + pgvector
-   │      ├── JPA entities (products, inventory, carts, orders, outbox)
-   │      ├── HNSW index for cosine-similarity ANN queries
-   │      └── Flyway migrations (version-controlled schema + seed data)
-   │
-   └── OutboxPublisher (SKIP LOCKED poller) ──► Kafka (order-created topic)
+   â”‚
+   â”œâ”€â”€ OrderService â”€â”€â”€ @Transactional + PESSIMISTIC_WRITE on inventory
+   â”‚                        â†“ atomic outbox event
+   â”œâ”€â”€ CartService
+   â”œâ”€â”€ ProductService â”€â”€â”€â”€ EmbeddingService â”€â”€ Resilience4j (CB + retry)
+   â”‚                                            â””â”€â”€ Ollama (local, nomic-embed-text)
+   â”‚
+   â”œâ”€â”€ PostgreSQL 16 + pgvector
+   â”‚      â”œâ”€â”€ JPA entities (products, inventory, carts, orders, outbox)
+   â”‚      â”œâ”€â”€ HNSW index for cosine-similarity ANN queries
+   â”‚      â””â”€â”€ Flyway migrations (version-controlled schema + seed data)
+   â”‚
+   â””â”€â”€ OutboxPublisher (SKIP LOCKED poller) â”€â”€â–º Kafka (order-created topic)
 ```
 
 ---
 
-## ✨ Features
+## âœ¨ Features
 
 ### Backend (Spring Boot 3.3 / Java 21)
 
@@ -103,7 +103,7 @@ Spring Boot REST (Controllers + MapStruct DTOs)
 | Axios | 1.16.1 | HTTP client |
 | Lucide React | 1.17.0 | Icon library |
 | Sonner | 2.0.7 | Toast notifications |
-| clsx + tailwind-merge | — | Class name utilities |
+| clsx + tailwind-merge | â€” | Class name utilities |
 
 ---
 
@@ -136,7 +136,7 @@ The frontend auto-detects the backend. If it's unreachable, it falls back to a f
 ```bash
 npm install
 npm run dev
-# → http://localhost:5173
+# â†’ http://localhost:5173
 # App works with seeded demo data in memory
 ```
 
@@ -199,35 +199,35 @@ All endpoints are prefixed with `/api`. Identity is passed via the `X-Owner-Key`
 
 ```
 products
-├── id (UUID PK)
-├── sku (unique)
-├── title, description, category
-├── price (NUMERIC), image_url
-├── embedding (vector(768)) ← nomic-embed-text
-├── created_at, updated_at, version
-└── HNSW index on embedding (vector_cosine_ops)
+â”œâ”€â”€ id (UUID PK)
+â”œâ”€â”€ sku (unique)
+â”œâ”€â”€ title, description, category
+â”œâ”€â”€ price (NUMERIC), image_url
+â”œâ”€â”€ embedding (vector(768)) â† nomic-embed-text
+â”œâ”€â”€ created_at, updated_at, version
+â””â”€â”€ HNSW index on embedding (vector_cosine_ops)
 
 inventory
-├── id (UUID PK)
-├── product_id (unique FK → products)
-├── quantity, reserved
-├── updated_at, version
-└── CHECK (quantity >= 0, reserved <= quantity)
+â”œâ”€â”€ id (UUID PK)
+â”œâ”€â”€ product_id (unique FK â†’ products)
+â”œâ”€â”€ quantity, reserved
+â”œâ”€â”€ updated_at, version
+â””â”€â”€ CHECK (quantity >= 0, reserved <= quantity)
 
 carts / cart_items
-├── owner_key (unique)
-└── items with product FK, unit_price, quantity
+â”œâ”€â”€ owner_key (unique)
+â””â”€â”€ items with product FK, unit_price, quantity
 
 orders / order_items
-├── order_number (unique), owner_key, status
-├── items with snapshot of SKU, title, price
-└── shipping_address, notes
+â”œâ”€â”€ order_number (unique), owner_key, status
+â”œâ”€â”€ items with snapshot of SKU, title, price
+â””â”€â”€ shipping_address, notes
 
 outbox_events
-├── aggregate_type, aggregate_id, event_type
-├── payload (JSONB), topic
-├── status (PENDING / PUBLISHED / FAILED), retry_count
-└── index on (created_at) WHERE status = 'PENDING'
+â”œâ”€â”€ aggregate_type, aggregate_id, event_type
+â”œâ”€â”€ payload (JSONB), topic
+â”œâ”€â”€ status (PENDING / PUBLISHED / FAILED), retry_count
+â””â”€â”€ index on (created_at) WHERE status = 'PENDING'
 ```
 
 ---
@@ -241,7 +241,7 @@ Orders and outbox events are written in the **same database transaction**. The `
 During checkout, `InventoryRepository` locks the product's inventory row with `PESSIMISTIC_WRITE` (`SELECT ... FOR UPDATE`). This serializes concurrent checkout attempts on the same product, preventing overselling. Lock timeout is 5 seconds.
 
 ### Local AI Embeddings
-Product descriptions are embedded using **Ollama** running `nomic-embed-text` (768-dimensional vectors). Embeddings are stored directly in PostgreSQL via **pgvector** with an **HNSW index** for approximate nearest-neighbor search. A **Resilience4j circuit breaker** wraps the Ollama call — if Ollama is down, the embedding is skipped (returned as null) rather than failing the product write.
+Product descriptions are embedded using **Ollama** running `nomic-embed-text` (768-dimensional vectors). Embeddings are stored directly in PostgreSQL via **pgvector** with an **HNSW index** for approximate nearest-neighbor search. A **Resilience4j circuit breaker** wraps the Ollama call â€” if Ollama is down, the embedding is skipped (returned as null) rather than failing the product write.
 
 ### SKIP LOCKED Outbox Poller
 Multiple backend instances can drain the outbox table concurrently. Each instance grabs the next batch of pending events with `FOR UPDATE SKIP LOCKED`, ensuring every event is processed exactly once per instance without coordination.
@@ -279,42 +279,42 @@ Key environment variables (see `backend/src/main/resources/application.yml`):
 ## Project Structure
 
 ```
-├── backend/
-│   ├── src/main/java/com/ankush/orderservice/
-│   │   ├── ai/EmbeddingService.java       # Ollama embedding client + Resilience4j
-│   │   ├── config/                        # Web, Kafka, AI fallback config
-│   │   ├── controller/                    # REST controllers
-│   │   ├── dto/                           # Request/response DTOs
-│   │   ├── entity/                        # JPA entities
-│   │   ├── exception/                     # Domain exceptions + global handler
-│   │   ├── kafka/                         # Outbox publisher, event sender
-│   │   ├── mapper/                        # MapStruct mappers
-│   │   ├── repository/                    # JPA + native query repos
-│   │   ├── service/                       # Order, Cart, Product services
-│   │   └── util/                          # ID generator, vector helpers
-│   ├── src/main/resources/
-│   │   ├── application.yml                # All configuration
-│   │   └── db/migration/                  # Flyway V1 (schema) + V2 (seed)
-│   ├── docker-compose.yml                 # Postgres + Kafka + Ollama + backend
-│   ├── Dockerfile                         # Multi-stage build
-│   └── pom.xml                            # Maven with all dependencies
-│
-├── src/
-│   ├── components/                        # Navbar, ProductCard, ProductForm, Modal, etc.
-│   ├── hooks/                             # useData (API + demo fallback), useBackendDetect
-│   ├── pages/                             # Landing, Products, Cart, Orders, Similar
-│   ├── services/                          # Axios client + in-memory demo store
-│   ├── store/                             # Zustand UI store
-│   ├── types/                             # TypeScript interfaces
-│   ├── utils/                             # cn() utility (clsx + tailwind-merge)
-│   ├── App.tsx                            # Router + Framer Motion transitions
-│   ├── main.tsx                           # Entry point
-│   └── index.css                          # Tailwind imports + global styles
-│
-├── index.html                             # Vite entry HTML
-├── vite.config.ts                         # Vite + React + Tailwind + singlefile plugin
-├── tsconfig.json                          # TypeScript config
-└── package.json                           # Frontend dependencies + scripts
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ src/main/java/com/ankush/orderservice/
+â”‚   â”‚   â”œâ”€â”€ ai/EmbeddingService.java       # Ollama embedding client + Resilience4j
+â”‚   â”‚   â”œâ”€â”€ config/                        # Web, Kafka, AI fallback config
+â”‚   â”‚   â”œâ”€â”€ controller/                    # REST controllers
+â”‚   â”‚   â”œâ”€â”€ dto/                           # Request/response DTOs
+â”‚   â”‚   â”œâ”€â”€ entity/                        # JPA entities
+â”‚   â”‚   â”œâ”€â”€ exception/                     # Domain exceptions + global handler
+â”‚   â”‚   â”œâ”€â”€ kafka/                         # Outbox publisher, event sender
+â”‚   â”‚   â”œâ”€â”€ mapper/                        # MapStruct mappers
+â”‚   â”‚   â”œâ”€â”€ repository/                    # JPA + native query repos
+â”‚   â”‚   â”œâ”€â”€ service/                       # Order, Cart, Product services
+â”‚   â”‚   â””â”€â”€ util/                          # ID generator, vector helpers
+â”‚   â”œâ”€â”€ src/main/resources/
+â”‚   â”‚   â”œâ”€â”€ application.yml                # All configuration
+â”‚   â”‚   â””â”€â”€ db/migration/                  # Flyway V1 (schema) + V2 (seed)
+â”‚   â”œâ”€â”€ docker-compose.yml                 # Postgres + Kafka + Ollama + backend
+â”‚   â”œâ”€â”€ Dockerfile                         # Multi-stage build
+â”‚   â””â”€â”€ pom.xml                            # Maven with all dependencies
+â”‚
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ components/                        # Navbar, ProductCard, ProductForm, Modal, etc.
+â”‚   â”œâ”€â”€ hooks/                             # useData (API + demo fallback), useBackendDetect
+â”‚   â”œâ”€â”€ pages/                             # Landing, Products, Cart, Orders, Similar
+â”‚   â”œâ”€â”€ services/                          # Axios client + in-memory demo store
+â”‚   â”œâ”€â”€ store/                             # Zustand UI store
+â”‚   â”œâ”€â”€ types/                             # TypeScript interfaces
+â”‚   â”œâ”€â”€ utils/                             # cn() utility (clsx + tailwind-merge)
+â”‚   â”œâ”€â”€ App.tsx                            # Router + Framer Motion transitions
+â”‚   â”œâ”€â”€ main.tsx                           # Entry point
+â”‚   â””â”€â”€ index.css                          # Tailwind imports + global styles
+â”‚
+â”œâ”€â”€ index.html                             # Vite entry HTML
+â”œâ”€â”€ vite.config.ts                         # Vite + React + Tailwind + singlefile plugin
+â”œâ”€â”€ tsconfig.json                          # TypeScript config
+â””â”€â”€ package.json                           # Frontend dependencies + scripts
 ```
 
 ---
@@ -354,5 +354,3 @@ The backend Docker image uses a multi-stage build with Maven + JDK 21 for compil
 ## License
 
 MIT
-#   O r d e r - S e r v i c e - A I - P o w e r e d - E - C o m m e r c e - M i c r o s e r v i c e  
- 
